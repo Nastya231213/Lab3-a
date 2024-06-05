@@ -2,9 +2,9 @@ package com.algorithms;
 
 import java.util.*;
 
-public class DijkstraAlgorithm {
+public class DijkstraAlgorithm  extends AbstractDijkstraAlgorithm{
 
-    public static int[] dijkstra(int[][] graph, int source) {
+    public  int[] dijkstra(int[][] graph, int source) {
         int V = graph.length;
         int[] dist = new int[V];
         boolean[] visited = new boolean[V];
@@ -24,17 +24,7 @@ public class DijkstraAlgorithm {
 
         return dist;
     }
-
-    private static int minDistance(int[] dist, boolean[] visited) {
-        int min = Integer.MAX_VALUE, minIndex = -1;
-        for (int v = 0; v < dist.length; v++) {
-            if (!visited[v] && dist[v] <= min) {
-                min = dist[v];
-                minIndex = v;
-            }
-        }
-        return minIndex;
-    }
+  
 
 }
 
