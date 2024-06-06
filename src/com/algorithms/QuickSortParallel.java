@@ -1,5 +1,8 @@
 package com.algorithms;
 
+import java.util.concurrent.RecursiveAction;
+import java.util.concurrent.ForkJoinPool;
+
 /**
  * @file QuickSortParallel.java
  * 
@@ -17,76 +20,39 @@ package com.algorithms;
  */
 public class QuickSortParallel extends AbstractQuickSort {
 
-    /**
-     * @class SortThread
-     * 
-     * @brief Приватний статичний вкладений клас, який представляє завдання сортування для підмасиву за допомогою алгоритму QuickSort.
-     * 
-     * Він наслідує клас Thread.
-     */
-    private static class SortThread extends Thread {
+    private static final int THRESHOLD = 1000;
+
+    private static class QuickSortTask extends RecursiveAction {
         private final int[] array;
         private final int left;
         private final int right;
         private final AbstractQuickSort sorter;
 
-        /**
-         * @brief Конструктор класу SortThread.
-         * 
-         * @param array масив, який потрібно відсортувати.
-         * @param left початковий індекс підмасиву, який потрібно відсортувати.
-         * @param right кінцевий індекс підмасиву, який потрібно відсортувати.
-         * @param sorter екземпляр сортувальника для використання при розбитті.
-         */
-        public SortThread(int[] array, int left, int right, AbstractQuickSort sorter) {
+        public QuickSortTask(int[] array, int left, int right, AbstractQuickSort sorter) {
             this.array = array;
             this.left = left;
             this.right = right;
             this.sorter = sorter;
         }
 
-        /**
-         * @brief Метод, що виконує завдання сортування.
-         * 
-         * Він сортує підмасив шляхом розбиття його навколо опорного елемента,
-         * а потім рекурсивно сортує ліві та праві підмасиви паралельно.
-         */
         @Override
-        public void run() {
-            if (right > left) {
+        protected void compute() {
+            if (right - left < THRESHOLD) {
+                sorter.quickSortSequential(array, left, right); // Виклик послідовного сортування, якщо розмір масиву менше порогового значення
+            } else {
                 int pivotIndex = sorter.partition(array, left, right);
-                SortThread leftThread = new SortThread(array, left, pivotIndex - 1, sorter);
-                SortThread rightThread = new SortThread(array, pivotIndex + 1, right, sorter);
-
-                leftThread.start();
-                rightThread.start();
-
-                try {
-                    leftThread.join();
-                    rightThread.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                QuickSortTask leftTask = new QuickSortTask(array, left, pivotIndex - 1, sorter);
+                QuickSortTask rightTask = new QuickSortTask(array, pivotIndex + 1, right, sorter);
+                invokeAll(leftTask, rightTask); // Викликаємо обидва підзавдання асинхронно
             }
         }
     }
 
-    /**
-     * @brief Метод, що сортує заданий масив за допомогою паралельного алгоритму QuickSort.
-     * 
-     * Цей метод ініціалізує процес сортування, запустивши перший SortThread.
-     * 
-     * @param array масив, який потрібно відсортувати.
-     */
     @Override
     public void sort(int[] array) {
-        SortThread thread = new SortThread(array, 0, array.length - 1, this);
-        thread.start();
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        ForkJoinPool pool = new ForkJoinPool();
+        pool.invoke(new QuickSortTask(array, 0, array.length - 1, this));
+        pool.shutdown();
     }
 }
 

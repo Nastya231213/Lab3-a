@@ -1,9 +1,9 @@
+package com.algorithms;
+
 /**
  * @file AbstractQuickSort.java
  * @brief Абстрактний клас, що визначає структуру для реалізацій алгоритму Quick Sort.
  */
-
-package com.algorithms;
 
 /**
  * @class AbstractQuickSort
@@ -46,17 +46,23 @@ public abstract class AbstractQuickSort {
         array[i] = array[j];
         array[j] = temp;
     }
-    public void quickSortSequential(int[] array, int left, int right) {
-        if (left < right) {
-            int pivotIndex = partition(array, left, right);
-            quickSortSequential(array, left, pivotIndex - 1);
-            quickSortSequential(array, pivotIndex + 1, right);
-        }
-    }
     /**
      * @brief Абстрактний метод для сортування масиву.
      *
      * @param array Масив для сортування.
      */
     public abstract void sort(int[] array);
+    /**
+     * Метод для сортування масиву послідовно за допомогою алгоритму QuickSort.
+     * 
+     * @param array масив, який потрібно відсортувати.
+     * @param left  початковий індекс підмасиву.
+     * @param right кінцевий індекс підмасиву.
+     */
+    public void quickSortSequential(int[] array, int left, int right) {
+        if (left < right) {
+            int pivotIndex = partition(array, left, right);
+            quickSortSequential(array, left, pivotIndex - 1);
+        }
+    }
 }

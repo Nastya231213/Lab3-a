@@ -119,7 +119,7 @@ public class QuickSortTest {
      */
     @Test
     public void testRecursiveQuickSortTime() {
-        int size = 10000; // Збільшений розмір масиву
+        int size = 100000; // Збільшений розмір масиву
         int[] unsortedArray = generateRandomArray(size);
 
         long startTime = System.nanoTime();
@@ -137,7 +137,7 @@ public class QuickSortTest {
      */
     @Test
     public void testParallelQuickSortTime() throws InterruptedException {
-        int size = 10000; // Збільшений розмір масиву
+        int size = 100000; // Збільшений розмір масиву
         int[] unsortedArray = generateRandomArray(size);
 
         long startTime = System.nanoTime();
