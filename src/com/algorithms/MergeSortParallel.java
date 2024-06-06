@@ -1,37 +1,17 @@
 package com.algorithms;
 
-/**
- * @file MergeSortParallel.java
- * @brief Реалізація паралельного сортування злиттям.
- */
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveAction;
 
-/**
- * @class MergeSortParallel
- * @brief Реалізація паралельного сортування злиттям.
- *
- * Цей клас розширює AbstractMergeSort і надає реалізацію
- * паралельного сортування масиву цілих чисел методом злиття.
- */
 public class MergeSortParallel extends AbstractMergeSort {
 
-    /**
-     * @class SortThread
-     * @brief Потік для паралельного сортування методом злиття.
-     */
-    private static class SortThread extends Thread {
+    private static class SortTask extends RecursiveAction {
         private final int[] array;
         private final int left;
         private final int right;
         private final MergeSortParallel mergeSort;
 
-        /**
-         * Конструктор потоку сортування.
-         * @param array Масив для сортування.
-         * @param left Ліва межа сортування.
-         * @param right Права межа сортування.
-         * @param mergeSort Об'єкт класу MergeSortParallel, який керує сортуванням.
-         */
-        public SortThread(int[] array, int left, int right, MergeSortParallel mergeSort) {
+        public SortTask(int[] array, int left, int right, MergeSortParallel mergeSort) {
             this.array = array;
             this.left = left;
             this.right = right;
@@ -39,40 +19,25 @@ public class MergeSortParallel extends AbstractMergeSort {
         }
 
         @Override
-        public void run() {
+        protected void compute() {
             if (left < right) {
                 int mid = (left + right) / 2;
-                SortThread leftThread = new SortThread(array, left, mid, mergeSort);
-                SortThread rightThread = new SortThread(array, mid + 1, right, mergeSort);
 
-                leftThread.start();
-                rightThread.start();
+                SortTask leftTask = new SortTask(array, left, mid, mergeSort);
+                SortTask rightTask = new SortTask(array, mid + 1, right, mergeSort);
 
-                try {
-                    leftThread.join();
-                    rightThread.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                invokeAll(leftTask, rightTask);
 
                 mergeSort.merge(array, left, mid, right);
             }
         }
     }
 
-    /**
-     * Метод для паралельного сортування масиву цілих чисел методом злиття.
-     * @param array Масив для сортування.
-     */
     public static void parallelMergeSort(int[] array) {
         MergeSortParallel mergeSort = new MergeSortParallel();
-        SortThread thread = new SortThread(array, 0, array.length - 1, mergeSort);
-        thread.start();
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        ForkJoinPool pool = new ForkJoinPool();
+        SortTask task = new SortTask(array, 0, array.length - 1, mergeSort);
+        pool.invoke(task);
     }
 
     @Override
@@ -87,5 +52,4 @@ public class MergeSortParallel extends AbstractMergeSort {
         }
     }
 }
-
 
