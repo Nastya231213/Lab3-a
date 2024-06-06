@@ -1,6 +1,8 @@
 package com.algorithms;
 
-import java.util.*;
+import java.util.concurrent.RecursiveTask;
+import java.util.Arrays;
+import java.util.concurrent.ForkJoinPool;
 
 /**
  * @file ParallelDijkstraAlgorithm.java
@@ -17,6 +19,8 @@ import java.util.*;
  */
 public class ParallelDijkstraAlgorithm extends AbstractDijkstraAlgorithm {
 
+    private static final int THRESHOLD = 100;
+
     /**
      * @brief Знаходить найкоротші шляхи від заданого вихідного вузла до всіх інших вузлів у графі за допомогою алгоритму Дейкстри.
      *
@@ -29,42 +33,61 @@ public class ParallelDijkstraAlgorithm extends AbstractDijkstraAlgorithm {
         int V = graph.length;
         int[] dist = new int[V]; 
         boolean[] visited = new boolean[V]; 
+        ForkJoinPool pool = new ForkJoinPool();
         Arrays.fill(dist, Integer.MAX_VALUE); 
         dist[source] = 0; 
 
         for (int count = 0; count < V - 1; count++) {
             int u = minDistance(dist, visited); 
 
-            visited[u] = true; 
+            visited[u] = true;
 
-            List<Thread> threads = new ArrayList<>(); 
-            for (int v = 0; v < V; v++) {
-                if (!visited[v] && graph[u][v] != 0 && dist[u] != Integer.MAX_VALUE) {
-                    int finalU = u; 
-                    int finalV = v; 
-                 
-                    Thread thread = new Thread(() -> {
-                        synchronized (dist) { 
-                            if (dist[finalU] + graph[finalU][finalV] < dist[finalV]) {
-                                dist[finalV] = dist[finalU] + graph[finalU][finalV];
-                            }
-                        }
-                    });
-                    threads.add(thread); 
-                    thread.start();
-                }
-            }
-
-            for (Thread thread : threads) {
-                try {
-                    thread.join(); 
-                } catch (InterruptedException e) {
-                    e.printStackTrace(); 
-                }
-            }
+            pool.invoke(new DijkstraTask(graph, dist, visited, u));
         }
 
+        pool.shutdown();
         return dist; 
     }
+
+    private class DijkstraTask extends RecursiveTask<Void> {
+        private final int[][] graph;
+        private final int[] dist;
+        private final boolean[] visited;
+        private final int u;
+
+        public DijkstraTask(int[][] graph, int[] dist, boolean[] visited, int u) {
+            this.graph = graph;
+            this.dist = dist;
+            this.visited = visited;
+            this.u = u;
+        }
+
+        @Override
+        protected Void compute() {
+            if (u < THRESHOLD) {
+                for (int v = 0; v < graph.length; v++) {
+                    if (!visited[v] && graph[u][v] != 0 && dist[u] != Integer.MAX_VALUE && dist[u] + graph[u][v] < dist[v]) {
+                        dist[v] = dist[u] + graph[u][v];
+                    }
+                }
+            } else {
+                DijkstraTask[] subTasks = new DijkstraTask[graph.length];
+                for (int v = 0; v < graph.length; v++) {
+                    if (!visited[v] && graph[u][v] != 0 && dist[u] != Integer.MAX_VALUE && dist[u] + graph[u][v] < dist[v]) {
+                        dist[v] = dist[u] + graph[u][v];
+                        subTasks[v] = new DijkstraTask(graph, dist, visited, v);
+                        subTasks[v].fork();
+                    }
+                }
+                for (DijkstraTask task : subTasks) {
+                    if (task != null) {
+                        task.join();
+                    }
+                }
+            }
+            return null;
+        }
+    }
 }
+
 
