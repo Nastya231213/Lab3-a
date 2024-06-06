@@ -2,6 +2,7 @@ package com.tests;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
@@ -164,5 +165,53 @@ public class MergeSortTest {
 
         assertArrayEquals("Послідовне сортування злиттям з неправильним діапазоном не вдалось", new int[]{1, 2, 3}, array);
         assertArrayEquals("Паралельне сортування злиттям з неправильним діапазоном не вдалось", new int[]{1, 2, 3}, parallelArray);
+    }
+    /**
+     * @brief Тестує час виконання послідовної версії алгоритму сортування злиттям.
+     */
+    @Test
+    public void testSequentialMergeSortTime() {
+        int[] array = generateRandomArray(100);
+        MergeSortSequential mergeSort = new MergeSortSequential();
+
+        long startTime = System.currentTimeMillis();
+        mergeSort.mergeSort(array, 0, array.length - 1);
+        long endTime = System.currentTimeMillis();
+
+        long duration = endTime - startTime;
+        System.out.println("Час послідовного сортування злиттям: " + duration + " мілісекунд");
+
+        assertTrue(duration >= 0); // Перевірка на додатність часу
+    }
+
+    /**
+     * @brief Тестує час виконання паралельної версії алгоритму сортування злиттям.
+     */
+    @Test
+    public void testParallelMergeSortTime() {
+        int[] array = generateRandomArray(100);
+
+        long startTime = System.currentTimeMillis();
+        MergeSortParallel.parallelMergeSort(array);
+        long endTime = System.currentTimeMillis();
+
+        long duration = endTime - startTime;
+        System.out.println("Час паралельного сортування злиттям: " + duration + " мілісекунд");
+        assertTrue(duration >= 0); 
+
+    }
+
+    /**
+     * @brief Генерує масив з випадковими значеннями.
+     *
+     * @param size розмір масиву
+     * @return згенерований масив
+     */
+    private int[] generateRandomArray(int size) {
+        int[] array = new int[size];
+        for (int i = 0; i < size; i++) {
+            array[i] = (int) (Math.random() * size);
+        }
+        return array;
     }
 }

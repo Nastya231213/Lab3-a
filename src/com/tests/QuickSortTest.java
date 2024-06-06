@@ -100,4 +100,54 @@ public class QuickSortTest {
         assertArrayEquals(expectedSortedArray, unsortedArray);
     }
 
+    /**
+     * @brief Генерує масив з випадковими значеннями.
+     *
+     * @param size розмір масиву
+     * @return згенерований масив
+     */
+    private int[] generateRandomArray(int size) {
+        int[] array = new int[size];
+        for (int i = 0; i < size; i++) {
+            array[i] = (int) (Math.random() * size);
+        }
+        return array;
+    }
+
+    /**
+     * @brief Тестує час виконання рекурсивного алгоритму швидкого сортування.
+     */
+    @Test
+    public void testRecursiveQuickSortTime() {
+        int size = 10000; // Збільшений розмір масиву
+        int[] unsortedArray = generateRandomArray(size);
+
+        long startTime = System.nanoTime();
+        new QuickSortSequential().sort(unsortedArray);
+        long endTime = System.nanoTime();
+
+        long duration = (endTime - startTime) / 1000000; // Конвертація в мілісекунди
+        System.out.println("Час послідовного швидкого сортування: " + duration + " мілісекунд");
+
+        assertTrue(duration >= 0);
+    }
+
+    /**
+     * @brief Тестує час виконання паралельного алгоритму швидкого сортування.
+     */
+    @Test
+    public void testParallelQuickSortTime() throws InterruptedException {
+        int size = 10000; // Збільшений розмір масиву
+        int[] unsortedArray = generateRandomArray(size);
+
+        long startTime = System.nanoTime();
+        new QuickSortParallel().sort(unsortedArray);
+        long endTime = System.nanoTime();
+
+        long duration = (endTime - startTime) / 1000000; // Конвертація в мілісекунди
+        System.out.println("Час паралельного швидкого сортування: " + duration + " мілісекунд");
+
+        assertTrue(duration >= 0);
+    }
 }
+

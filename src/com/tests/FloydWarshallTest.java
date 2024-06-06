@@ -10,6 +10,7 @@ import com.algorithms.FloydWarshall;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.logging.Logger;
 
 /**
  * @file FloydWarshallTest.java
@@ -21,6 +22,7 @@ public class FloydWarshallTest {
     private FloydWarshall floydWarshall;
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private final PrintStream originalOut = System.out;
+    private static final Logger logger = Logger.getLogger(FloydWarshallTest.class.getName());
 
     /**
      * @brief Налаштування перед кожним тестом.
@@ -104,6 +106,52 @@ public class FloydWarshallTest {
     }
 
     /**
+     * @brief Тестує час виконання послідовного алгоритму Флойда-Уоршелла.
+     */
+    @Test
+    public void testFloydWarshallSequentialTime() {
+        int[][] graph = generateLargeGraph(100); // Генерація великого графа
+        long startTime = System.currentTimeMillis();
+        floydWarshall.floydWarshallSequential(graph);
+        long endTime = System.currentTimeMillis();
+        long duration = endTime - startTime;
+        logger.info("Час послідовного Флойда-Уоршелла: " + duration + " мілісекунд");
+    }
+
+    /**
+     * @brief Тестує час виконання паралельного алгоритму Флойда-Уоршелла.
+     */
+    @Test
+    public void testFloydWarshallParallelTime() {
+        int[][] graph = generateLargeGraph(100); // Генерація великого графа
+        long startTime = System.currentTimeMillis();
+        floydWarshall.floydWarshall(graph);
+        long endTime = System.currentTimeMillis();
+        long duration = endTime - startTime;
+        logger.info("Час паралельного Флойда-Уоршелла: " + duration + " мілісекунд");
+    }
+
+    /**
+     * @brief Генерує великий граф для тестування.
+     *
+     * @param size Розмір графа.
+     * @return Згенерований граф.
+     */
+    private int[][] generateLargeGraph(int size) {
+        int[][] graph = new int[size][size];
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (i == j) {
+                    graph[i][j] = 0;
+                } else {
+                    graph[i][j] = (int) (Math.random() * 100) + 1;
+                }
+            }
+        }
+        return graph;
+    }
+
+    /**
      * @brief Витягує результат з рядка вихідних даних.
      *
      * @param output Рядок вихідних даних.
@@ -128,3 +176,4 @@ public class FloydWarshallTest {
         return result;
     }
 }
+

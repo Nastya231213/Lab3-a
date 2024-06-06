@@ -46,7 +46,13 @@ public abstract class AbstractQuickSort {
         array[i] = array[j];
         array[j] = temp;
     }
-
+    public void quickSortSequential(int[] array, int left, int right) {
+        if (left < right) {
+            int pivotIndex = partition(array, left, right);
+            quickSortSequential(array, left, pivotIndex - 1);
+            quickSortSequential(array, pivotIndex + 1, right);
+        }
+    }
     /**
      * @brief Абстрактний метод для сортування масиву.
      *

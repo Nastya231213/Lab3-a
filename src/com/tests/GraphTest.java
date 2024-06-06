@@ -1,8 +1,6 @@
 package com.tests;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,6 +8,7 @@ import com.algorithms.GraphBFS;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.logging.Logger;
 
 /**
  * @file GraphTest.java
@@ -21,6 +20,7 @@ public class GraphTest {
     private GraphBFS graph;
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private final PrintStream originalOut = System.out;
+    private static final Logger logger = Logger.getLogger(GraphTest.class.getName());
 
     /**
      * @brief Підготовка тестового середовища.
@@ -40,6 +40,23 @@ public class GraphTest {
         System.setOut(new PrintStream(outContent));
     }
 
+    @Test
+    public void testSequentialBFSTime() {
+        long startTime = System.currentTimeMillis();
+        graph.sequentialBFS(0);
+        long endTime = System.currentTimeMillis();
+        long duration = endTime - startTime;
+        logger.info("Час послідовного BFS: " + duration + " мілісекунд");
+    }
+
+    @Test
+    public void testParallelBFSTime() {
+        long startTime = System.currentTimeMillis();
+        graph.parallelBFS(0);
+        long endTime = System.currentTimeMillis();
+        long duration = endTime - startTime;
+        logger.info("Час паралельного BFS: " + duration + " мілісекунд");
+    }
     /**
      * @brief Відновлення оригінального потоку виведення.
      */
@@ -123,4 +140,6 @@ public class GraphTest {
         GraphBFS nullGraph = new GraphBFS(0); 
         nullGraph.parallelBFS(0);
     }
+ 
+
 }
