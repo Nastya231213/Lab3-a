@@ -1,9 +1,12 @@
+package com.algorithms;
+
+import java.util.concurrent.RecursiveAction;
+import java.util.concurrent.ForkJoinPool;
+
 /**
  * @file FloydWarshall.java
  * @brief Клас, що реалізує алгоритм Флойда-Уоршелла як у послідовному, так і в паралельному виконанні.
  */
-
-package com.algorithms;
 
 /**
  * @class FloydWarshall
@@ -13,7 +16,7 @@ package com.algorithms;
  */
 public class FloydWarshall {
     private final static int INF = Integer.MAX_VALUE;
-    private final static int THREADS = 4; 
+    private final static int THREADS = 4; // Number of threads for the ForkJoinPool
 
     /**
      * @brief Повертає значення, що використовується для позначення нескінченності (відсутності шляху).
@@ -31,29 +34,10 @@ public class FloydWarshall {
     public void floydWarshall(int[][] graph) {
         int V = graph.length;
         int[][] dist = initializeDistances(graph);
+        ForkJoinPool pool = new ForkJoinPool(THREADS);
 
         for (int k = 0; k < V; k++) {
-            Thread[] threads = new Thread[THREADS];
-            final int kk = k; 
-            for (int t = 0; t < THREADS; t++) {
-                final int threadId = t;
-                threads[t] = new Thread(() -> {
-                    for (int i = threadId; i < V; i += THREADS) {
-                        for (int j = 0; j < V; j++) {
-                            updateDistance(dist, i, j, kk);
-                        }
-                    }
-                });
-                threads[t].start();
-            }
-
-            for (Thread thread : threads) {
-                try {
-                    thread.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+            pool.invoke(new FloydWarshallTask(dist, k, V));
         }
 
         printSolution(dist);
@@ -126,6 +110,33 @@ public class FloydWarshall {
                 }
             }
             System.out.println();
+        }
+    }
+
+    /**
+     * @class FloydWarshallTask
+     * @brief Завдання для паралельного виконання алгоритму Флойда-Уоршелла.
+     */
+    private static class FloydWarshallTask extends RecursiveAction {
+        private final int[][] dist;
+        private final int k;
+        private final int V;
+
+        FloydWarshallTask(int[][] dist, int k, int V) {
+            this.dist = dist;
+            this.k = k;
+            this.V = V;
+        }
+
+        @Override
+        protected void compute() {
+            for (int i = 0; i < V; i++) {
+                for (int j = 0; j < V; j++) {
+                    if (dist[i][k] != INF && dist[k][j] != INF && dist[i][k] + dist[k][j] < dist[i][j]) {
+                        dist[i][j] = dist[i][k] + dist[k][j];
+                    }
+                }
+            }
         }
     }
 }

@@ -1,9 +1,12 @@
 package com.algorithms;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.RecursiveAction;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * @file GraphBFS.java
@@ -16,8 +19,6 @@ import java.util.List;
  * @class GraphBFS
  * 
  * @brief Клас, який реалізує алгоритми послідовного та паралельного пошуку в ширину (BFS) для графів.
- * 
- * Він наслідує клас Thread.
  */
 public class GraphBFS {
     private int V;  
@@ -74,7 +75,7 @@ public class GraphBFS {
     }
 
     /**
-     * @brief Паралельний алгоритм пошуку в ширину (BFS).
+     * @brief Паралельний алгоритм пошуку в ширину (BFS) за допомогою ForkJoinPool.
      *
      * Виводить вершини графа в порядку їх відвідування, використовуючи багатопоточність.
      *
@@ -82,74 +83,60 @@ public class GraphBFS {
      */
     public void parallelBFS(int s) {
         final boolean visited[] = new boolean[V];
-        final Queue<Integer> queue = new LinkedList<>();
-        List<Thread> threads = new ArrayList<>();
+        final Queue<Integer> queue = new ConcurrentLinkedQueue<>();
+        ForkJoinPool pool = new ForkJoinPool();
 
-        synchronized (queue) {
-            visited[s] = true;
-            queue.add(s);
-        }
+        visited[s] = true;
+        queue.add(s);
 
-        while (true) {
-            Integer currentNode;
-            synchronized (queue) {
-                currentNode = queue.poll();
-            }
+        pool.invoke(new BFSAction(s, visited, queue));
 
-            if (currentNode == null) {
-                break;
-            }
-
-            final int current = currentNode;
-            synchronized (System.out) {
-                System.out.print(current + " ");
-            }
-
-            for (int n : adj[current]) {
-                synchronized (visited) {
-                    if (!visited[n]) {
-                        visited[n] = true;
-                        synchronized (queue) {
-                            queue.add(n);
-                        }
-                        final int node = n;
-                        Thread thread = new Thread(() -> parallelVisitNode(node, visited, queue));
-                        thread.start();
-                        threads.add(thread);
-                    }
-                }
-            }
-        }
-
-        for (Thread thread : threads) {
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        pool.shutdown();
     }
 
     /**
-     * @brief Метод, що виконує паралельне відвідування вершини.
-     *
-     * @param n Вершина, яку потрібно відвідати.
-     * @param visited Масив відвіданих вершин.
-     * @param queue Черга для BFS.
+     * @class BFSAction
+     * @brief Клас, що реалізує задачу для ForkJoinPool для паралельного виконання BFS.
      */
-    private void parallelVisitNode(int n, boolean[] visited, Queue<Integer> queue) {
-        for (int neighbor : adj[n]) {
-            synchronized (visited) {
-                if (!visited[neighbor]) {
-                    visited[neighbor] = true;
-                    synchronized (queue) {
-                        queue.add(neighbor);
+    private class BFSAction extends RecursiveAction {
+        private final int node;
+        private final boolean[] visited;
+        private final Queue<Integer> queue;
+
+        BFSAction(int node, boolean[] visited, Queue<Integer> queue) {
+            this.node = node;
+            this.visited = visited;
+            this.queue = queue;
+        }
+
+        @Override
+        protected void compute() {
+            List<BFSAction> tasks = new ArrayList<>();
+            while (true) {
+                Integer currentNode;
+                synchronized (queue) {
+                    currentNode = queue.poll();
+                }
+
+                if (currentNode == null) {
+                    break;
+                }
+
+                System.out.print(currentNode + " ");
+
+                for (int neighbor : adj[currentNode]) {
+                    synchronized (visited) {
+                        if (!visited[neighbor]) {
+                            visited[neighbor] = true;
+                            queue.add(neighbor);
+                            tasks.add(new BFSAction(neighbor, visited, queue));
+                        }
                     }
                 }
             }
+            invokeAll(tasks);
         }
     }
 }
-
 
 

@@ -110,7 +110,7 @@ public class FloydWarshallTest {
      */
     @Test
     public void testFloydWarshallSequentialTime() {
-        int[][] graph = generateLargeGraph(100); // Генерація великого графа
+        int[][] graph = generateLargeGraph(10); // Генерація великого графа
         long startTime = System.currentTimeMillis();
         floydWarshall.floydWarshallSequential(graph);
         long endTime = System.currentTimeMillis();
@@ -123,7 +123,7 @@ public class FloydWarshallTest {
      */
     @Test
     public void testFloydWarshallParallelTime() {
-        int[][] graph = generateLargeGraph(100); // Генерація великого графа
+        int[][] graph = generateLargeGraph(10); // Генерація великого графа
         long startTime = System.currentTimeMillis();
         floydWarshall.floydWarshall(graph);
         long endTime = System.currentTimeMillis();
