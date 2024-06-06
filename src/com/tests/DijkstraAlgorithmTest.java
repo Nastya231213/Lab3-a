@@ -3,12 +3,26 @@ package com.tests;
 import org.junit.jupiter.api.Test;
 import com.algorithms.DijkstraAlgorithm;
 import com.algorithms.ParallelDijkstraAlgorithm;
-
-import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
+/**
+ * @file DijkstraAlgorithmTest.java
+ *
+ * @brief Тести для алгоритмів Дейкстри (послідовного та паралельного).
+ */
 public class DijkstraAlgorithmTest {
 
+    /**
+     * @class DijkstraAlgorithmTest
+     * 
+     * @brief Тестовий клас для перевірки роботи алгоритмів Дейкстри.
+     */
+    
+    /**
+     * @brief Тестує послідовний алгоритм Дейкстри на графі з заданою матрицею суміжності.
+     *
+     * Перевіряє, чи відповідають результати очікуваним значенням.
+     */
     @Test
     public void testDijkstraAlgorithm() {
         int[][] graph = {
@@ -38,6 +52,11 @@ public class DijkstraAlgorithmTest {
         assertArrayEquals(expected, dist);
     }
 
+    /**
+     * @brief Тестує паралельний алгоритм Дейкстри на графі з заданою матрицею суміжності.
+     *
+     * Перевіряє, чи відповідають результати очікуваним значенням.
+     */
     @Test
     public void testParallelDijkstraAlgorithm() {
         int[][] graph = {
@@ -54,7 +73,12 @@ public class DijkstraAlgorithmTest {
         int[] expected = {0, 10, 20, 23, 20, 21};
         assertArrayEquals(expected, dist);
     }
-  
+
+    /**
+     * @brief Тестує алгоритм Дейкстри на графі з одним вузлом.
+     *
+     * Перевіряє, чи відповідають результати очікуваним значенням.
+     */
     @Test
     public void testSingleNodeGraph() {
         int[][] graph = {{0}};
@@ -65,6 +89,12 @@ public class DijkstraAlgorithmTest {
 
         assertArrayEquals(expected, dist);
     }
+
+    /**
+     * @brief Тестує алгоритм Дейкстри на графі з негативними вагами.
+     *
+     * Перевіряє, чи відповідають результати очікуваним значенням.
+     */
     @Test
     public void testNegativeWeights() {
         int[][] graph = {
@@ -80,6 +110,12 @@ public class DijkstraAlgorithmTest {
 
         assertArrayEquals(expected, dist);
     }
+
+    /**
+     * @brief Тестує алгоритм Дейкстри на роз'єднаному графі.
+     *
+     * Перевіряє, чи відповідають результати очікуваним значенням.
+     */
     @Test
     public void testDisconnectedGraph() {
         int[][] graph = {
@@ -95,6 +131,12 @@ public class DijkstraAlgorithmTest {
 
         assertArrayEquals(expected, dist);
     }
+
+    /**
+     * @brief Тестує алгоритм Дейкстри на порожньому графі.
+     *
+     * Перевіряє, чи викликає метод обробку винятку ArrayIndexOutOfBoundsException.
+     */
     @Test
     public void testEmptyGraph() {
         int[][] graph = new int[0][0];
@@ -107,3 +149,4 @@ public class DijkstraAlgorithmTest {
         }
     }
 }
+

@@ -1,13 +1,36 @@
 package com.algorithms;
 
+/**
+ * @file MergeSortParallel.java
+ * @brief Реалізація паралельного сортування злиттям.
+ */
+
+/**
+ * @class MergeSortParallel
+ * @brief Реалізація паралельного сортування злиттям.
+ *
+ * Цей клас розширює AbstractMergeSort і надає реалізацію
+ * паралельного сортування масиву цілих чисел методом злиття.
+ */
 public class MergeSortParallel extends AbstractMergeSort {
 
+    /**
+     * @class SortThread
+     * @brief Потік для паралельного сортування методом злиття.
+     */
     private static class SortThread extends Thread {
         private final int[] array;
         private final int left;
         private final int right;
         private final MergeSortParallel mergeSort;
 
+        /**
+         * Конструктор потоку сортування.
+         * @param array Масив для сортування.
+         * @param left Ліва межа сортування.
+         * @param right Права межа сортування.
+         * @param mergeSort Об'єкт класу MergeSortParallel, який керує сортуванням.
+         */
         public SortThread(int[] array, int left, int right, MergeSortParallel mergeSort) {
             this.array = array;
             this.left = left;
@@ -37,6 +60,10 @@ public class MergeSortParallel extends AbstractMergeSort {
         }
     }
 
+    /**
+     * Метод для паралельного сортування масиву цілих чисел методом злиття.
+     * @param array Масив для сортування.
+     */
     public static void parallelMergeSort(int[] array) {
         MergeSortParallel mergeSort = new MergeSortParallel();
         SortThread thread = new SortThread(array, 0, array.length - 1, mergeSort);

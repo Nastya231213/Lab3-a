@@ -9,8 +9,16 @@ import org.junit.Test;
 import com.algorithms.QuickSortSequential;
 import com.algorithms.QuickSortParallel;
 
+/**
+ * @file QuickSortTest.java
+ *
+ * @brief Тести для алгоритму швидкого сортування.
+ */
 public class QuickSortTest {
 
+    /**
+     * @brief Тестує рекурсивний алгоритм швидкого сортування.
+     */
     @Test
     public void testRecursiveQuickSort() {
         int[] unsortedArray = {5, 3, 8, 4, 2, 1, 7, 6};
@@ -19,6 +27,9 @@ public class QuickSortTest {
         assertArrayEquals(expectedSortedArray, unsortedArray);
     }
 
+    /**
+     * @brief Тестує паралельний алгоритм швидкого сортування.
+     */
     @Test
     public void testParallelQuickSort() throws InterruptedException {
         int[] unsortedArray = {5, 3, 8, 4, 2, 1, 7, 6};
@@ -26,6 +37,10 @@ public class QuickSortTest {
         new QuickSortParallel().sort(unsortedArray);
         assertArrayEquals(expectedSortedArray, unsortedArray);
     }
+
+    /**
+     * @brief Тестує порожній масив.
+     */
     @Test
     public void testEmptyArray() {
         int[] unsortedArray = new int[0];
@@ -36,6 +51,10 @@ public class QuickSortTest {
         new QuickSortParallel().sort(unsortedArray);
         assertArrayEquals(expectedSortedArray, unsortedArray);
     }
+
+    /**
+     * @brief Тестує відсортований масив.
+     */
     @Test
     public void testSortedArray() {
         int[] unsortedArray = {1, 2, 3, 4, 5, 6, 7, 8};
@@ -46,6 +65,10 @@ public class QuickSortTest {
         new QuickSortParallel().sort(unsortedArray);
         assertArrayEquals(expectedSortedArray, unsortedArray);
     }
+
+    /**
+     * @brief Тестує великий масив.
+     */
     @Test
     public void testLargeArray() throws InterruptedException {
         int size = 100000;
@@ -62,6 +85,10 @@ public class QuickSortTest {
         new QuickSortParallel().sort(unsortedArray);
         assertArrayEquals(expectedSortedArray, unsortedArray);
     }
+
+    /**
+     * @brief Тестує масив з дубльованими значеннями.
+     */
     @Test
     public void testDuplicateValues() {
         int[] unsortedArray = {5, 3, 8, 4, 2, 2, 1, 7, 6};

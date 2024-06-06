@@ -2,9 +2,29 @@ package com.algorithms;
 
 import java.util.*;
 
-public class DijkstraAlgorithm  extends AbstractDijkstraAlgorithm{
+/**
+ * @file DijkstraAlgorithm.java
+ * @brief Реалізація алгоритму Дейкстри для пошуку найкоротших шляхів у графі.
+ */
 
-    public  int[] dijkstra(int[][] graph, int source) {
+/**
+ * @class DijkstraAlgorithm
+ * @brief Реалізація алгоритму Дейкстри для пошуку найкоротших шляхів у графі.
+ *
+ * Цей клас розширює AbstractDijkstraAlgorithm і надає реалізацію
+ * алгоритму Дейкстри для пошуку найкоротших шляхів від заданої
+ * вершини джерела до всіх інших вершин у графі.
+ */
+public class DijkstraAlgorithm extends AbstractDijkstraAlgorithm {
+
+    /**
+     * @brief Застосовує алгоритм Дейкстри для пошуку найкоротших шляхів від заданої вершини до всіх інших вершин.
+     *
+     * @param graph Матриця суміжності, що представляє граф.
+     * @param source Вершина джерела, з якої потрібно знайти найкоротші шляхи.
+     * @return Масив, що містить найкоротші відстані від вершини джерела до всіх інших вершин.
+     */
+    public int[] dijkstra(int[][] graph, int source) {
         int V = graph.length;
         int[] dist = new int[V];
         boolean[] visited = new boolean[V];
@@ -24,7 +44,6 @@ public class DijkstraAlgorithm  extends AbstractDijkstraAlgorithm{
 
         return dist;
     }
-  
-
 }
+
 

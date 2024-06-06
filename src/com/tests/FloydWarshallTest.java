@@ -11,23 +11,37 @@ import com.algorithms.FloydWarshall;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
+/**
+ * @file FloydWarshallTest.java
+ *
+ * @brief Тести для алгоритму Флойда-Уоршелла.
+ */
 public class FloydWarshallTest {
 
     private FloydWarshall floydWarshall;
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private final PrintStream originalOut = System.out;
 
+    /**
+     * @brief Налаштування перед кожним тестом.
+     */
     @Before
     public void setUp() {
         floydWarshall = new FloydWarshall();
         System.setOut(new PrintStream(outContent));
     }
 
+    /**
+     * @brief Відновлення потоків після кожного тесту.
+     */
     @After
     public void restoreStreams() {
         System.setOut(originalOut);
     }
 
+    /**
+     * @brief Тестує послідовний алгоритм Флойда-Уоршелла.
+     */
     @Test
     public void testFloydWarshallSequential() {
         int[][] graph = {
@@ -48,6 +62,9 @@ public class FloydWarshallTest {
         assertArrayEquals(expected, extractResult(outContent.toString().trim()));
     }
 
+    /**
+     * @brief Тестує паралельний алгоритм Флойда-Уоршелла.
+     */
     @Test
     public void testFloydWarshallParallel() {
         int[][] graph = {
@@ -68,18 +85,30 @@ public class FloydWarshallTest {
         assertArrayEquals(expected, extractResult(outContent.toString().trim()));
     }
 
+    /**
+     * @brief Тестує випадок передачі порожнього графа для послідовного алгоритму Флойда-Уоршелла.
+     */
     @Test
     public void testNullGraphSequential() {
         int[][] graph = null;
         assertThrows(NullPointerException.class, () -> floydWarshall.floydWarshallSequential(graph));
     }
 
+    /**
+     * @brief Тестує випадок передачі порожнього графа для паралельного алгоритму Флойда-Уоршелла.
+     */
     @Test
     public void testNullGraphParallel() {
         int[][] graph = null;
         assertThrows(NullPointerException.class, () -> floydWarshall.floydWarshall(graph));
     }
 
+    /**
+     * @brief Витягує результат з рядка вихідних даних.
+     *
+     * @param output Рядок вихідних даних.
+     * @return Двовимірний масив результатів.
+     */
     private int[][] extractResult(String output) {
         String[] lines = output.split("\n");
         int V = lines.length;
@@ -99,4 +128,3 @@ public class FloydWarshallTest {
         return result;
     }
 }
-
